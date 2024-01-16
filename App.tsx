@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -15,7 +15,13 @@ import {
   Text,
   useColorScheme,
   View,
+  Animated,
+  Easing,
+  Image,
+  Button,
+  TouchableOpacity
 } from 'react-native';
+// import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {
   Colors,
@@ -24,75 +30,123 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const translation =  useRef(new Animated.Value(300)).current;
+  const ballMove =  useRef(new Animated.Value(10)).current;
+  const cloudX =  useRef(new Animated.Value(100)).current;
+  const cloudX2 =  useRef(new Animated.Value(0)).current;
+  const cloudX3 =  useRef(new Animated.Value(-400)).current;
+  const [loading, setLoading] = useState(true)
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+
+  const startBall = () => {
+    console.log("movingg----")
+    Animated.timing(ballMove, {
+      toValue: 800,
+      useNativeDriver: true,
+      duration: 20000,
+    }).start()
+  }
+
+  useEffect(() => {
+    console.log("stratdd")
+
+    Animated.parallel([
+      Animated.timing(cloudX, {
+        toValue: 500,
+        useNativeDriver: true,
+        duration: 50000,
+      }),
+      Animated.timing(cloudX2, {
+        toValue: 500,
+        useNativeDriver: true,
+        duration: 51000,
+      }),
+      Animated.timing(cloudX3, {
+        toValue: 600,
+        useNativeDriver: true,
+        duration: 50000,
+      })
+    ]).start()
+
+
+    setTimeout(() => {
+      
+      Animated.sequence([
+        Animated.timing(translation, {
+          toValue: 500,
+          easing: Easing.bounce,
+          useNativeDriver: true,
+        })
+      ]).start()
+
+      setLoading(false)
+    }, 1000)
+  }, [])
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <GestureHandlerRootView >
+       <View style={{backgroundColor:"skyblue"}}>
+       <Animated.View style={{ transform: [{
+        translateX: cloudX
+      }] }}>
+        <Image source={{
+              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+            }} 
+            style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
+        />
+       </Animated.View>
+       <Animated.View style={{ transform: [{
+        translateX: cloudX2
+      }] }}>
+        <Image source={{
+              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+            }} 
+            style={{width: 80, height: 80, position:"absolute", marginTop: 60, marginLeft: 0}}
+        />
+      </Animated.View>
+      <Animated.View style={{ transform: [{
+        translateX: cloudX3
+      }] }}>
+        <Image source={{
+              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+            }} 
+            style={{width: 80, height: 80, position:"absolute", marginTop: 45, marginLeft: 0}}
+        />
+      </Animated.View>
+      <Animated.View style={[styles.redBall, { transform: [{
+        translateY: translation,
+      },{
+        translateX: ballMove
+      }
+      ] }]}>
+        <Text>{loading?"Loading":"BALLie"}</Text>
+      </Animated.View>
+      <View style={styles.floor}>
+    <TouchableOpacity
+    style={{
+      borderWidth: 1,
+      zIndex: 999,
+      borderRadius: 6,
+      alignItems: "center",
+      alignContent: "center",
+      justifyContent: 'center',
+      position: "absolute",
+      width: 120,   
+      padding: 10,         
+      backgroundColor: "brown",
+      marginTop: 30,
+    }}
+      onPress={()=> startBall()}
+      >
+      <Text>Start the Ball</Text>
+    </TouchableOpacity>
+      </View>
+    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -113,6 +167,22 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  redBall: {
+    width: 80,
+    height: 80,
+    backgroundColor: "red",
+    borderRadius: 100,
+    alignItems:"center",
+    justifyContent: "center"
+  },
+  floor: {
+    width: 1000,
+    height: 500,
+    backgroundColor: "green",
+    transform: [{
+      translateY: 500
+    }]
+  }
 });
 
 export default App;
