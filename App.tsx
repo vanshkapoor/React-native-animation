@@ -1,16 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, { useEffect, useRef, useState } from 'react';
-import type {PropsWithChildren} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
@@ -18,27 +7,19 @@ import {
   Animated,
   Easing,
   Image,
-  Button,
   TouchableOpacity
 } from 'react-native';
-// import {TouchableOpacity} from 'react-native-gesture-handler';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const weather =  useRef(new Animated.Value(0)).current;
   const translation =  useRef(new Animated.Value(300)).current;
-  const ballMove =  useRef(new Animated.Value(10)).current;
+  const ballMove =  useRef(new Animated.Value(0)).current;
   const cloudX =  useRef(new Animated.Value(100)).current;
   const cloudX2 =  useRef(new Animated.Value(0)).current;
   const cloudX3 =  useRef(new Animated.Value(-400)).current;
+
   const [loading, setLoading] = useState(true)
 
 
@@ -52,8 +33,17 @@ function App(): React.JSX.Element {
   }
 
   useEffect(() => {
-    console.log("stratdd")
+    setTimeout(() => {
+      Animated.timing(weather, {
+        toValue: 1000,
+        useNativeDriver: true,
+        duration: 15000,
+      }).start()
+    }, 3000)
+  }, [])
 
+
+  useEffect(() => {
     Animated.parallel([
       Animated.timing(cloudX, {
         toValue: 500,
@@ -89,7 +79,23 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView >
-       <View style={{backgroundColor:"skyblue"}}>
+       <Animated.View style={{
+        backgroundColor: weather.interpolate({
+                            inputRange: [0, 1000],
+                            outputRange: ['skyblue', "black"],
+                        })
+        }}>
+        <Animated.View style={{ opacity: weather.interpolate({
+                  inputRange: [0, 500],
+                  outputRange: [0, 1]
+                })
+        }}>
+          <Image source={{
+                uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Weather_icon_-_full_moon.svg/1200px-Weather_icon_-_full_moon.svg.png'
+              }} 
+              style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
+          />
+        </Animated.View>
        <Animated.View style={{ transform: [{
         translateX: cloudX
       }] }}>
@@ -121,31 +127,37 @@ function App(): React.JSX.Element {
         translateY: translation,
       },{
         translateX: ballMove
+      },
+      {
+        rotate: ballMove.interpolate({
+          inputRange: [0, 800],
+          outputRange: ['0deg', '1080deg']
+        })
       }
       ] }]}>
         <Text>{loading?"Loading":"BALLie"}</Text>
       </Animated.View>
       <View style={styles.floor}>
-    <TouchableOpacity
-    style={{
-      borderWidth: 1,
-      zIndex: 999,
-      borderRadius: 6,
-      alignItems: "center",
-      alignContent: "center",
-      justifyContent: 'center',
-      position: "absolute",
-      width: 120,   
-      padding: 10,         
-      backgroundColor: "brown",
-      marginTop: 30,
-    }}
-      onPress={()=> startBall()}
-      >
-      <Text>Start the Ball</Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+        style={{
+          borderWidth: 1,
+          zIndex: 999,
+          borderRadius: 6,
+          alignItems: "center",
+          alignContent: "center",
+          justifyContent: 'center',
+          position: "absolute",
+          width: 120,   
+          padding: 10,         
+          backgroundColor: "brown",
+          marginTop: 30,
+        }}
+          onPress={()=> startBall()}
+          >
+          <Text>Start the Ball</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
     </GestureHandlerRootView>
   );
 }
@@ -172,6 +184,7 @@ const styles = StyleSheet.create({
     height: 80,
     backgroundColor: "red",
     borderRadius: 100,
+    marginLeft: 10,
     alignItems:"center",
     justifyContent: "center"
   },
