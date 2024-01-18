@@ -20,24 +20,20 @@ function App(): React.JSX.Element {
   const cloudX2 =  useRef(new Animated.Value(0)).current;
   const cloudX3 =  useRef(new Animated.Value(-400)).current;
 
-  const [loading, setLoading] = useState(true)
-
-
   const startBall = () => {
-    console.log("movingg----")
     Animated.timing(ballMove, {
       toValue: 800,
       useNativeDriver: true,
-      duration: 20000,
+      duration: 10000,
     }).start()
   }
 
   useEffect(() => {
-    setTimeout(() => {
+    setInterval(() => {
       Animated.timing(weather, {
-        toValue: 1000,
+        toValue: 1,
         useNativeDriver: true,
-        duration: 15000,
+        duration: 5000,
       }).start()
     }, 3000)
   }, [])
@@ -64,16 +60,11 @@ function App(): React.JSX.Element {
 
 
     setTimeout(() => {
-      
-      Animated.sequence([
         Animated.timing(translation, {
-          toValue: 500,
+          toValue: 486,
           easing: Easing.bounce,
           useNativeDriver: true,
-        })
-      ]).start()
-
-      setLoading(false)
+        }).start()
     }, 1000)
   }, [])
 
@@ -81,46 +72,46 @@ function App(): React.JSX.Element {
     <GestureHandlerRootView >
        <Animated.View style={{
         backgroundColor: weather.interpolate({
-                            inputRange: [0, 1000],
+                            inputRange: [0, 1],
                             outputRange: ['skyblue', "black"],
                         })
         }}>
         <Animated.View style={{ opacity: weather.interpolate({
-                  inputRange: [0, 500],
+                  inputRange: [0, 0.5],
                   outputRange: [0, 1]
                 })
         }}>
           <Image source={{
                 uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Weather_icon_-_full_moon.svg/1200px-Weather_icon_-_full_moon.svg.png'
               }} 
-              style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
+              style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 20}}
           />
         </Animated.View>
        <Animated.View style={{ transform: [{
         translateX: cloudX
       }] }}>
         <Image source={{
-              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+              uri: 'https://static.vecteezy.com/system/resources/previews/012/595/156/non_2x/realistic-white-cloud-free-png.png'
             }} 
-            style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
+            style={{width: 150, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
         />
        </Animated.View>
        <Animated.View style={{ transform: [{
         translateX: cloudX2
       }] }}>
         <Image source={{
-              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+              uri: 'https://static.vecteezy.com/system/resources/previews/012/595/156/non_2x/realistic-white-cloud-free-png.png'
             }} 
-            style={{width: 80, height: 80, position:"absolute", marginTop: 60, marginLeft: 0}}
+            style={{width: 150, height: 80, position:"absolute", marginTop: 60, marginLeft: 0}}
         />
       </Animated.View>
       <Animated.View style={{ transform: [{
         translateX: cloudX3
       }] }}>
         <Image source={{
-              uri: 'https://freesvg.org/img/cloud_jon_phillips_01.png'
+              uri: 'https://iconspng.com/uploads/very-fluffy-cloud.png'
             }} 
-            style={{width: 80, height: 80, position:"absolute", marginTop: 45, marginLeft: 0}}
+            style={{width: 150, height: 80, position:"absolute", marginTop: 45, marginLeft: 0}}
         />
       </Animated.View>
       <Animated.View style={[styles.redBall, { transform: [{
@@ -135,26 +126,18 @@ function App(): React.JSX.Element {
         })
       }
       ] }]}>
-        <Text>{loading?"Loading":"BALLie"}</Text>
+              <Image source={
+                  require("./assets/glassball.png")
+              }
+              style={{width: 80, height: 80, position:"absolute", marginTop: 30, marginLeft: 60}}
+          />
       </Animated.View>
       <View style={styles.floor}>
         <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          zIndex: 999,
-          borderRadius: 6,
-          alignItems: "center",
-          alignContent: "center",
-          justifyContent: 'center',
-          position: "absolute",
-          width: 120,   
-          padding: 10,         
-          backgroundColor: "brown",
-          marginTop: 30,
-        }}
+        style={styles.startBallBtn}
           onPress={()=> startBall()}
           >
-          <Text>Start the Ball</Text>
+          <Text style={{fontWeight: "bold", color: "white"}}>Start the Ball</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -180,21 +163,33 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   redBall: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     backgroundColor: "red",
     borderRadius: 100,
-    marginLeft: 10,
+    marginLeft: 30,
     alignItems:"center",
     justifyContent: "center"
   },
   floor: {
     width: 1000,
     height: 500,
+    display: "flex",
     backgroundColor: "green",
     transform: [{
       translateY: 500
     }]
+  },
+  startBallBtn: {
+    borderWidth: 3,
+    zIndex: 999,
+    borderRadius: 6,
+    alignItems: "center",
+    marginLeft: 120,
+    width: 120,   
+    padding: 10,      
+    backgroundColor: "brown",
+    marginTop: 30,
   }
 });
 
